@@ -516,15 +516,36 @@ body {
     width: 100%;
 }
 
-.hero-text h2 {
-    font-size: 3.5rem;
-    margin-bottom: 1.5rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--primary-purple), var(--accent-purple));
+.hero-brand {
+    font-size: 4.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--accent-gold-light), var(--accent-gold), #e8a95b);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    letter-spacing: -1px;
+    text-shadow: none;
+}
+
+.hero-brand-accent {
+    color: var(--accent-gold);
+    -webkit-text-fill-color: var(--accent-gold);
+}
+
+.hero.has-bg-image .hero-brand {
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+}
+
+.hero-text h2 {
+    font-size: 2rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.9);
+    -webkit-text-fill-color: initial;
+    letter-spacing: 1px;
 }
 
 .hero-text p {
@@ -763,6 +784,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
+    cursor: pointer;
     object-fit: cover;
     opacity: 0;
     transition: opacity 0.4s ease;
@@ -1552,6 +1574,98 @@ body {
     }
 }
 
+/* ========== Image Lightbox ========== */
+.lightbox {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.92);
+    z-index: 3000;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+}
+
+.lightbox.active {
+    display: flex;
+}
+
+.lightbox-img {
+    max-width: 90vw;
+    max-height: 85vh;
+    object-fit: contain;
+    border-radius: 8px;
+    animation: fadeInUp 0.3s ease;
+    user-select: none;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2.5rem;
+    cursor: pointer;
+    z-index: 3001;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+.lightbox-close:hover {
+    opacity: 1;
+}
+
+.lightbox-prev,
+.lightbox-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    font-size: 3rem;
+    cursor: pointer;
+    padding: 10px 18px;
+    border-radius: 8px;
+    opacity: 0.6;
+    transition: opacity 0.2s, background 0.2s;
+    z-index: 3001;
+}
+
+.lightbox-prev { left: 12px; }
+.lightbox-next { right: 12px; }
+
+.lightbox-prev:hover,
+.lightbox-next:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.lightbox-counter {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 480px) {
+    .lightbox-prev,
+    .lightbox-next {
+        font-size: 2rem;
+        padding: 8px 14px;
+    }
+
+    .lightbox-prev { left: 6px; }
+    .lightbox-next { right: 6px; }
+}
+
 /* ========== Size Guide Modal ========== */
 .size-guide-modal {
     display: none;
@@ -1762,8 +1876,12 @@ body {
         gap: 2rem;
     }
 
+    .hero-brand {
+        font-size: 3rem;
+    }
+
     .hero-text h2 {
-        font-size: 2.5rem;
+        font-size: 1.6rem;
     }
 
     .hero-visual {
@@ -1841,8 +1959,13 @@ body {
         min-height: 400px;
     }
 
+    .hero-brand {
+        font-size: 2.2rem;
+        letter-spacing: 2px;
+    }
+
     .hero-text h2 {
-        font-size: 1.8rem;
+        font-size: 1.2rem;
     }
 
     .hero-text p {
@@ -1883,28 +2006,23 @@ body {
 }
 
 /* ========== Admin Floating Button ========== */
-.admin-float-btn {
-    position: fixed;
-    bottom: 24px;
-    left: 24px;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary-purple), var(--accent-purple));
-    color: white;
+/* Admin button hidden in header */
+.admin-header-btn {
+    background: transparent;
     border: none;
+    color: rgba(255, 255, 255, 0.15);
     cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 16px rgba(45, 27, 78, 0.4);
-    transition: var(--transition);
-    z-index: 1500;
+    transition: color 0.3s;
+    margin-right: 6px;
 }
 
-.admin-float-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 6px 24px rgba(45, 27, 78, 0.6);
+.admin-header-btn:hover {
+    color: rgba(255, 255, 255, 0.7);
 }
 
 /* ========== Admin Panel (Full Screen) ========== */
@@ -2431,12 +2549,6 @@ body {
         max-height: none;
     }
 
-    .admin-float-btn {
-        bottom: 16px;
-        left: 16px;
-        width: 42px;
-        height: 42px;
-    }
 }
 
 /* ========== Animations ========== */

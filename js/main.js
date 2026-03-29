@@ -16,17 +16,40 @@ const sizeGuideModal = document.getElementById('sizeGuideModal');
 
 // ========== Default Products ==========
 const defaultProducts = [
-    { name: 'Legging Essência', price: 189.90, description: 'Cintura alta, compressão leve e flexibilidade total para seu dia', images: [] },
-    { name: 'Top Força', price: 129.90, description: 'Suporte máximo, tecido respirável e design elegante', images: [] },
-    { name: 'Short Movimento', price: 149.90, description: 'Bolsos funcionais, ajuste perfeito e liberdade total', images: [] },
-    { name: 'Jaqueta Visão', price: 259.90, description: 'Corta vento, leve e perfeita para treinar em qualquer lugar', images: [] }
+    // Elegância Plus
+    { name: 'Macacão Plus', price: 160.00, description: 'Macacão fitness plus size, modelagem perfeita e conforto total', images: [], category: 'plus' },
+    { name: 'Conjunto Plus Rosa', price: 149.00, description: 'Conjunto fitness plus size, tecido premium com compressão leve', images: [], category: 'plus' },
+    { name: 'Conjunto Plus Vermelho', price: 159.00, description: 'Conjunto fitness plus size, cintura alta e suporte máximo', images: [], category: 'plus' },
+    { name: 'Blusa Dryft Plus', price: 65.00, description: 'Blusa dry fit plus size, tecido leve e respirável', images: [], category: 'plus' },
+    { name: 'Conjunto Plus Preto', price: 150.00, description: 'Conjunto fitness plus size preto, elegância e conforto', images: [], category: 'plus' },
+    { name: 'Tule Plus', price: 59.00, description: 'Blusa tule plus size, transparência sutil e estilo moderno', images: [], category: 'plus' },
+    { name: 'Conjunto Plus Brilho', price: 150.00, description: 'Conjunto fitness plus size com detalhe brilhante', images: [], category: 'plus' },
+    { name: 'Conjunto Plus Marrom', price: 135.00, description: 'Conjunto fitness plus size, cor tendência e tecido macio', images: [], category: 'plus' },
+
+    // Elegância Tamanho Único (36/42)
+    { name: 'Conjunto Azul', price: 149.00, description: 'Conjunto fitness tam. único (36-42), top + legging azul', images: [], category: 'tamanho-unico' },
+    { name: 'Macacão Verde', price: 150.00, description: 'Macacão fitness tam. único (36-42), cor verde vibrante', images: [], category: 'tamanho-unico' },
+    { name: 'Conjunto Verde Água', price: 125.00, description: 'Conjunto fitness tam. único (36-42), top + legging verde água', images: [], category: 'tamanho-unico' },
+    { name: 'Conjunto Preto', price: 115.00, description: 'Conjunto fitness tam. único (36-42), clássico preto', images: [], category: 'tamanho-unico' },
+    { name: 'Conjunto Short', price: 100.00, description: 'Conjunto fitness tam. único (36-42), top + short prático', images: [], category: 'tamanho-unico' },
+    { name: 'Macacão Preto', price: 150.00, description: 'Macacão fitness tam. único (36-42), visual poderoso', images: [], category: 'tamanho-unico' },
+    { name: 'Conjunto Bicolor', price: 139.00, description: 'Conjunto fitness tam. único (36-42), duas cores combinando', images: [], category: 'tamanho-unico' },
+    { name: 'Macacão Marrom', price: 150.00, description: 'Macacão fitness tam. único (36-42), cor tendência', images: [], category: 'tamanho-unico' },
+
+    // Blusas
+    { name: 'Blusa Tule', price: 44.99, description: 'Blusa com detalhe em tule, leve e estilosa', images: [], category: 'blusas' },
+    { name: 'Blusa Tule Manga Longa', price: 59.90, description: 'Blusa tule manga longa, transparência elegante', images: [], category: 'blusas' },
+    { name: 'Cropt Tule Pink', price: 39.90, description: 'Cropped tule na cor pink, perfeito para o treino', images: [], category: 'blusas' },
+    { name: 'Blusa UV', price: 49.00, description: 'Blusa com proteção UV, ideal para treinos ao ar livre', images: [], category: 'blusas' },
+    { name: 'Blusa Dryft', price: 59.90, description: 'Blusa dry fit, tecido tecnológico que seca rápido', images: [], category: 'blusas' }
 ];
 
 // ========== Products Management ==========
 class ProductsManager {
     constructor() {
         this.products = this.loadProducts();
-        if (this.products.length === 0) {
+        // Reload defaults if products are the old set (4 items or less)
+        if (this.products.length <= 4) {
             this.loadDefaultProducts();
         }
     }
@@ -388,7 +411,58 @@ function switchSizeTab(tab) {
 // Close modals
 if (cartModal) cartModal.addEventListener('click', (e) => { if (e.target === cartModal) closeCart(); });
 if (sizeGuideModal) sizeGuideModal.addEventListener('click', (e) => { if (e.target === sizeGuideModal) closeSizeGuide(); });
-document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeCart(); closeSizeGuide(); closeAdminPanel(); closeCheckout(); } });
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closeLightbox(); closeCart(); closeSizeGuide(); closeAdminPanel(); closeCheckout(); }
+    if (e.key === 'ArrowLeft') lightboxNav(-1);
+    if (e.key === 'ArrowRight') lightboxNav(1);
+});
+
+// ========== Image Lightbox ==========
+let lightboxImages = [];
+let lightboxIndex = 0;
+
+function openLightbox(productId, startIndex = 0) {
+    const product = productsManager.products.find(p => p.id === productId);
+    if (!product) return;
+    const imgs = (product.images || []).filter(i => i.startsWith('data:') || i.startsWith('http'));
+    if (imgs.length === 0) return;
+
+    lightboxImages = imgs;
+    lightboxIndex = startIndex;
+
+    const lightbox = document.getElementById('imageLightbox');
+    const img = document.getElementById('lightboxImg');
+    const counter = document.getElementById('lightboxCounter');
+
+    img.src = lightboxImages[lightboxIndex];
+    counter.textContent = lightboxImages.length > 1 ? `${lightboxIndex + 1} / ${lightboxImages.length}` : '';
+
+    // Hide nav buttons if only 1 image
+    document.querySelector('.lightbox-prev').style.display = lightboxImages.length > 1 ? '' : 'none';
+    document.querySelector('.lightbox-next').style.display = lightboxImages.length > 1 ? '' : 'none';
+
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(event) {
+    if (event && event.target !== event.currentTarget && event.target.tagName !== 'BUTTON') return;
+    const lightbox = document.getElementById('imageLightbox');
+    if (lightbox) {
+        lightbox.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+function lightboxNav(dir) {
+    if (lightboxImages.length <= 1) return;
+    const lightbox = document.getElementById('imageLightbox');
+    if (!lightbox || !lightbox.classList.contains('active')) return;
+
+    lightboxIndex = (lightboxIndex + dir + lightboxImages.length) % lightboxImages.length;
+    document.getElementById('lightboxImg').src = lightboxImages[lightboxIndex];
+    document.getElementById('lightboxCounter').textContent = `${lightboxIndex + 1} / ${lightboxImages.length}`;
+}
 
 // ========== Initialize ==========
 window.addEventListener('load', () => {
@@ -445,10 +519,10 @@ function renderProducts() {
         if (hasImages) {
             const realImages = imgs.filter(i => i.startsWith('data:') || i.startsWith('http'));
             if (realImages.length === 1) {
-                imageHtml = `<div class="product-image" style="padding:0;"><img src="${realImages[0]}" alt="${product.name}" style="width:100%;height:100%;object-fit:cover;"></div>`;
+                imageHtml = `<div class="product-image" style="padding:0;cursor:pointer;" onclick="openLightbox(${product.id})"><img src="${realImages[0]}" alt="${product.name}" style="width:100%;height:100%;object-fit:cover;"></div>`;
             } else {
                 const slidesHtml = realImages.map((img, i) =>
-                    `<img class="product-slide ${i === 0 ? 'active' : ''}" src="${img}" alt="${product.name} foto ${i + 1}">`
+                    `<img class="product-slide ${i === 0 ? 'active' : ''}" src="${img}" alt="${product.name} foto ${i + 1}" onclick="openLightbox(${product.id}, ${i})">`
                 ).join('');
                 const dotsHtml = realImages.map((_, i) =>
                     `<span class="product-dot ${i === 0 ? 'active' : ''}" onclick="event.stopPropagation(); goToProductSlide(${product.id}, ${i})"></span>`
