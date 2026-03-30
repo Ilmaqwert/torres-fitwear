@@ -296,7 +296,8 @@ body {
     background: rgba(45, 27, 78, 0.05);
 }
 
-.cart-item-color {
+.cart-item-color,
+.cart-item-letter {
     width: 50px;
     height: 50px;
     border-radius: 10px;
@@ -308,6 +309,14 @@ body {
     color: white;
     font-weight: 700;
     font-size: 0.8rem;
+}
+
+.cart-item-img {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    flex-shrink: 0;
+    object-fit: cover;
 }
 
 .cart-item-info {

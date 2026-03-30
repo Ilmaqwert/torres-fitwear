@@ -151,12 +151,12 @@ class ShoppingCart {
         localStorage.setItem('torres_cart', JSON.stringify(this.items));
     }
 
-    addItem(productName, price = 0) {
+    addItem(productName, price = 0, image = '') {
         const existingItem = this.items.find(item => item.name === productName);
         if (existingItem) {
             existingItem.quantity += 1;
         } else {
-            this.items.push({ name: productName, price, quantity: 1 });
+            this.items.push({ name: productName, price, quantity: 1, image });
         }
         this.saveToStorage();
         this.updateCartBadge();
@@ -243,9 +243,13 @@ function renderCartItems() {
                 <span>Adicione produtos para começar!</span>
             </div>`;
     } else {
-        container.innerHTML = cart.items.map(item => `
+        container.innerHTML = cart.items.map(item => {
+            const imgHtml = item.image
+                ? `<img class="cart-item-img" src="${item.image}" alt="${item.name}">`
+                : `<div class="cart-item-letter">${item.name.charAt(0)}</div>`;
+            return `
             <div class="cart-item">
-                <div class="cart-item-color">${item.name.charAt(0)}</div>
+                ${imgHtml}
                 <div class="cart-item-info">
                     <div class="cart-item-name">${item.name}</div>
                     <div class="cart-item-price">R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</div>
@@ -256,7 +260,8 @@ function renderCartItems() {
                     <button class="cart-item-qty-btn" onclick="cart.updateQuantity('${item.name.replace(/'/g, "\\'")}', 1)">+</button>
                 </div>
                 <button class="cart-item-remove" onclick="cart.removeItem('${item.name.replace(/'/g, "\\'")}')" title="Remover">&times;</button>
-            </div>`).join('');
+            </div>`;
+        }).join('');
     }
     if (totalEl) totalEl.textContent = `R$ ${cart.getTotal().toFixed(2).replace('.', ',')}`;
 }
@@ -317,7 +322,9 @@ const cartMessages = [
 ];
 
 function addToCart(productName, price = 0) {
-    cart.addItem(productName, price);
+    const product = productsManager.products.find(p => p.name === productName);
+    const image = product && product.images && product.images.length > 0 ? product.images[0] : '';
+    cart.addItem(productName, price, image);
     const msg = cartMessages[Math.floor(Math.random() * cartMessages.length)];
     showNotification(`${productName} adicionado!\n${msg}`);
 }
