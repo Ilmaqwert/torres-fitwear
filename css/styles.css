@@ -2326,19 +2326,21 @@ body {
 .admin-header-btn {
     background: transparent;
     border: none;
-    color: rgba(255, 255, 255, 0.15);
+    color: transparent;
     cursor: pointer;
     padding: 6px;
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.3s;
     margin-right: 6px;
+    opacity: 0;
+    width: 20px;
+    height: 20px;
 }
 
 .admin-header-btn:hover {
-    color: rgba(255, 255, 255, 0.7);
+    opacity: 0;
 }
 
 /* ========== Admin Panel (Full Screen) ========== */
