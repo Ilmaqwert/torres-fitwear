@@ -1031,6 +1031,10 @@ function sendCheckoutWhatsApp(e) {
     }
 
     const addr = getCheckoutAddress();
+    // Garantir que o frete está calculado pelo UF
+    if (freteAtual === 0 && addr.uf) {
+        calcularFrete(addr.uf);
+    }
     const subtotal = cart.getTotal();
     const totalComFrete = subtotal + freteAtual;
     let msg = `Ola! Gostaria de finalizar meu pedido:\n\n`;
