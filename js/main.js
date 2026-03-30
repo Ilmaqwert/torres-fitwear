@@ -923,6 +923,15 @@ function openCheckout() {
     }
     closeCart();
 
+    // Reset frete
+    freteAtual = 0;
+    const freteInfo = document.getElementById('freteInfo');
+    const freteRow = document.getElementById('checkoutFreteRow');
+    const totalFinalRow = document.getElementById('checkoutTotalFinalRow');
+    if (freteInfo) freteInfo.style.display = 'none';
+    if (freteRow) freteRow.style.display = 'none';
+    if (totalFinalRow) totalFinalRow.style.display = 'none';
+
     const modal = document.getElementById('checkoutModal');
 
     // Populate order summary
@@ -962,7 +971,7 @@ function generatePixQrCode() {
     const qrImg = document.getElementById('pixQrCode');
     if (!qrImg) return;
 
-    const total = cart.getTotal().toFixed(2);
+    const total = (cart.getTotal() + freteAtual).toFixed(2);
     const pixPayload = `PIX:${PIX_KEY}:${total}`;
     qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(pixPayload)}`;
     qrImg.alt = 'QR Code PIX - R$ ' + total.replace('.', ',');
@@ -1021,12 +1030,19 @@ function sendCheckoutWhatsApp(e) {
     }
 
     const addr = getCheckoutAddress();
-    const total = cart.getTotal().toFixed(2).replace('.', ',');
+    const subtotal = cart.getTotal();
+    const totalComFrete = subtotal + freteAtual;
     let msg = `Ola! Gostaria de finalizar meu pedido:\n\n`;
     cart.items.forEach(item => {
         msg += `• ${item.name} (x${item.quantity}) - R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}\n`;
     });
-    msg += `\n*Total: R$ ${total}*\n`;
+    msg += `\n*Subtotal: R$ ${subtotal.toFixed(2).replace('.', ',')}*`;
+    if (freteAtual > 0) {
+        msg += `\n*Frete: R$ ${freteAtual.toFixed(2).replace('.', ',')}*`;
+        msg += `\n*Total: R$ ${totalComFrete.toFixed(2).replace('.', ',')}*\n`;
+    } else {
+        msg += `\n*Total: R$ ${subtotal.toFixed(2).replace('.', ',')}*\n`;
+    }
     msg += `\n*Endereco de entrega:*\n`;
     msg += `${addr.nome}\n`;
     msg += `${addr.rua}, ${addr.numero}`;
@@ -1041,7 +1057,7 @@ function sendCheckoutWhatsApp(e) {
     if (link) link.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 }
 
-// Busca automatica de CEP
+// Busca automatica de CEP + calculo de frete
 function buscarCep(cep) {
     cep = cep.replace(/\D/g, '');
     if (cep.length !== 8) return;
@@ -1054,8 +1070,85 @@ function buscarCep(cep) {
             if (data.bairro) document.getElementById('checkoutBairro').value = data.bairro;
             if (data.localidade) document.getElementById('checkoutCidade').value = data.localidade;
             if (data.uf) document.getElementById('checkoutUf').value = data.uf;
+            calcularFrete(data.uf);
         })
         .catch(() => {});
+}
+
+// Tabela de frete por região (baseado nos Correios PAC)
+let freteAtual = 0;
+
+function calcularFrete(uf) {
+    uf = (uf || '').toUpperCase();
+
+    // Frete por região - valores aproximados Correios PAC
+    const freteTabela = {
+        // Espírito Santo (local)
+        'ES': { valor: 18.90, prazo: '3-5 dias úteis' },
+        // Sudeste
+        'RJ': { valor: 24.90, prazo: '5-8 dias úteis' },
+        'SP': { valor: 26.90, prazo: '5-8 dias úteis' },
+        'MG': { valor: 24.90, prazo: '5-8 dias úteis' },
+        // Sul
+        'PR': { valor: 32.90, prazo: '7-10 dias úteis' },
+        'SC': { valor: 35.90, prazo: '8-12 dias úteis' },
+        'RS': { valor: 37.90, prazo: '8-12 dias úteis' },
+        // Centro-Oeste
+        'DF': { valor: 32.90, prazo: '7-10 dias úteis' },
+        'GO': { valor: 32.90, prazo: '7-10 dias úteis' },
+        'MT': { valor: 38.90, prazo: '10-15 dias úteis' },
+        'MS': { valor: 36.90, prazo: '10-15 dias úteis' },
+        // Nordeste
+        'BA': { valor: 29.90, prazo: '7-10 dias úteis' },
+        'SE': { valor: 32.90, prazo: '8-12 dias úteis' },
+        'AL': { valor: 34.90, prazo: '8-12 dias úteis' },
+        'PE': { valor: 35.90, prazo: '8-12 dias úteis' },
+        'PB': { valor: 36.90, prazo: '10-12 dias úteis' },
+        'RN': { valor: 37.90, prazo: '10-12 dias úteis' },
+        'CE': { valor: 38.90, prazo: '10-15 dias úteis' },
+        'PI': { valor: 39.90, prazo: '10-15 dias úteis' },
+        'MA': { valor: 42.90, prazo: '12-15 dias úteis' },
+        // Norte
+        'PA': { valor: 44.90, prazo: '12-18 dias úteis' },
+        'TO': { valor: 39.90, prazo: '10-15 dias úteis' },
+        'AP': { valor: 49.90, prazo: '15-20 dias úteis' },
+        'AM': { valor: 52.90, prazo: '15-20 dias úteis' },
+        'RR': { valor: 54.90, prazo: '15-20 dias úteis' },
+        'AC': { valor: 54.90, prazo: '15-20 dias úteis' },
+        'RO': { valor: 46.90, prazo: '12-18 dias úteis' }
+    };
+
+    const frete = freteTabela[uf] || { valor: 39.90, prazo: '10-15 dias úteis' };
+    freteAtual = frete.valor;
+
+    // Mostrar resultado do frete no formulário
+    const freteInfo = document.getElementById('freteInfo');
+    const freteValor = document.getElementById('freteValor');
+    const fretePrazo = document.getElementById('fretePrazo');
+    if (freteInfo) freteInfo.style.display = 'flex';
+    if (freteValor) freteValor.textContent = `Frete: R$ ${frete.valor.toFixed(2).replace('.', ',')}`;
+    if (fretePrazo) fretePrazo.textContent = `Prazo estimado: ${frete.prazo} (Correios PAC)`;
+
+    // Atualizar totais no resumo e QR code
+    atualizarTotalComFrete();
+    generatePixQrCode();
+}
+
+function atualizarTotalComFrete() {
+    const subtotal = cart.getTotal();
+    const total = subtotal + freteAtual;
+
+    const freteRow = document.getElementById('checkoutFreteRow');
+    const freteEl = document.getElementById('checkoutFrete');
+    const totalFinalRow = document.getElementById('checkoutTotalFinalRow');
+    const totalFinalEl = document.getElementById('checkoutTotalFinal');
+
+    if (freteAtual > 0) {
+        if (freteRow) freteRow.style.display = 'flex';
+        if (freteEl) freteEl.textContent = `R$ ${freteAtual.toFixed(2).replace('.', ',')}`;
+        if (totalFinalRow) totalFinalRow.style.display = 'flex';
+        if (totalFinalEl) totalFinalEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+    }
 }
 
 // Attach click validation to WhatsApp button

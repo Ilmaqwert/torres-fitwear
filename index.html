@@ -165,9 +165,17 @@
             <!-- Order Summary -->
             <div class="checkout-summary">
                 <div class="checkout-summary-items" id="checkoutItems"></div>
-                <div class="checkout-summary-total">
-                    <span>Total:</span>
+                <div class="checkout-summary-total" id="checkoutSubtotalRow">
+                    <span>Subtotal:</span>
                     <strong id="checkoutTotal">R$ 0,00</strong>
+                </div>
+                <div class="checkout-summary-total checkout-frete-row" id="checkoutFreteRow" style="display:none;">
+                    <span>Frete (Correios):</span>
+                    <strong id="checkoutFrete">R$ 0,00</strong>
+                </div>
+                <div class="checkout-summary-total checkout-total-final" id="checkoutTotalFinalRow" style="display:none;">
+                    <span>Total com frete:</span>
+                    <strong id="checkoutTotalFinal">R$ 0,00</strong>
                 </div>
             </div>
 
@@ -194,6 +202,15 @@
                     <div class="address-field" style="flex:1;">
                         <label>Rua *</label>
                         <input type="text" id="checkoutRua" placeholder="Nome da rua">
+                    </div>
+                </div>
+                <div id="freteInfo" class="frete-info" style="display:none;">
+                    <div class="frete-result">
+                        <span class="frete-icon">📦</span>
+                        <div class="frete-details">
+                            <strong id="freteValor">R$ 0,00</strong>
+                            <span id="fretePrazo">Prazo estimado: 5-10 dias úteis</span>
+                        </div>
                     </div>
                 </div>
                 <div class="address-row">

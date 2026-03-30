@@ -1424,6 +1424,68 @@ body {
     color: var(--primary-purple);
 }
 
+.checkout-frete-row {
+    border-top: 1px dashed #ddd;
+    padding-top: 8px;
+    font-size: 0.95rem;
+}
+
+.checkout-frete-row strong {
+    font-size: 1rem !important;
+    color: #666 !important;
+}
+
+.checkout-total-final {
+    border-top: 2px solid var(--primary-purple);
+    padding-top: 10px;
+    margin-top: 4px;
+}
+
+.checkout-total-final strong {
+    font-size: 1.4rem !important;
+    color: var(--primary-purple) !important;
+}
+
+/* Frete info box */
+.frete-info {
+    background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+    border: 1px solid #86efac;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: fadeInUp 0.3s ease;
+}
+
+.frete-result {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.frete-icon {
+    font-size: 1.5rem;
+}
+
+.frete-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.frete-details strong {
+    color: #16a34a;
+    font-size: 1.05rem;
+}
+
+.frete-details span {
+    color: #666;
+    font-size: 0.85rem;
+}
+
 /* Payment Options */
 .payment-option {
     border: 2px solid var(--border-color);
