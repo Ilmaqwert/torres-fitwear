@@ -50,19 +50,21 @@ const defaultProducts = [
     { name: 'Conjunto Marinho Detalhe Branco', price: 125.00, description: 'Top + short azul marinho com detalhe branco', images: ['assets/products/conjunto-marinho-branco-1.jpeg','assets/products/conjunto-marinho-branco-2.jpeg'], category: 'tamanho-unico', colors: [{name:'Azul Marinho',hex:'#1e3a5f'},{name:'Branco',hex:'#ffffff'}] },
 
     // ===== BLUSAS =====
-    { name: 'Blusa Tule', price: 44.99, description: 'Blusa com detalhe em tule, leve e estilosa', images: [], category: 'blusas' },
-    { name: 'Blusa Tule Manga Longa', price: 59.90, description: 'Blusa tule manga longa, transparência elegante', images: [], category: 'blusas' },
-    { name: 'Cropt Tule Pink', price: 39.90, description: 'Cropped tule na cor pink, perfeito para o treino', images: [], category: 'blusas' },
-    { name: 'Blusa UV', price: 49.00, description: 'Blusa com proteção UV, ideal para treinos ao ar livre', images: [], category: 'blusas' },
-    { name: 'Blusa Dryft', price: 59.90, description: 'Blusa dry fit, tecido tecnológico que seca rápido', images: [], category: 'blusas' }
+    { name: 'Blusa Tule Azul', price: 44.99, description: 'Regata em tule azul claro, leve e transparente, perfeita para usar sobre o top no treino', images: ['assets/products/blusa-tule-azul-1.jpeg','assets/products/blusa-tule-azul-2.jpeg'], category: 'blusas', colors: [{name:'Azul',hex:'#87CEEB'}] },
+    { name: 'Blusa Tule Verde Oliva', price: 44.99, description: 'Regata em tule verde oliva, transparência estilosa e caimento solto', images: ['assets/products/blusa-tule-verde-1.jpeg','assets/products/blusa-tule-verde-2.jpeg'], category: 'blusas', colors: [{name:'Verde',hex:'#808000'}] },
+    { name: 'Blusa Tule Manga Longa', price: 59.90, description: 'Blusa tule manga longa preta, transparência elegante para usar no dia a dia ou no treino', images: ['assets/products/blusa-tule-manga-longa-1.jpeg'], category: 'blusas', colors: [{name:'Preto',hex:'#000000'}] },
+    { name: 'Cropt Tule Pink', price: 39.90, description: 'Cropped tule na cor pink, transparente e estiloso, perfeito para o treino', images: ['assets/products/cropt-tule-pink-1.jpeg'], category: 'blusas', colors: [{name:'Pink',hex:'#ec4899'}] },
+    { name: 'Blusa UV Turquesa', price: 49.00, description: 'Blusa com proteção UV e secagem rápida, recorte nas costas, ideal para treinos ao ar livre', images: ['assets/products/blusa-uv-1.jpeg','assets/products/blusa-uv-2.jpeg','assets/products/blusa-uv-3.jpeg'], category: 'blusas', colors: [{name:'Verde Água',hex:'#2dd4bf'}] },
+    { name: 'Blusa Tule Plus Marinho', price: 49.90, description: 'Blusa tule plus size azul marinho, detalhe transparente na cintura, moderna e confortável', images: ['assets/products/blusa-tule-plus-1.jpeg','assets/products/blusa-tule-plus-2.jpeg'], category: 'blusas', colors: [{name:'Azul Marinho',hex:'#1e3a5f'}] },
+    { name: 'Blusa Dryft', price: 59.90, description: 'Blusa dry fit azul, tecido tecnológico com secagem rápida e toque macio', images: ['assets/products/blusa-dryft-1.jpeg','assets/products/blusa-dryft-2.jpeg'], category: 'blusas', colors: [{name:'Azul',hex:'#6B7FA0'}] }
 ];
 
 // ========== Products Management ==========
 class ProductsManager {
     constructor() {
         this.products = this.loadProducts();
-        // Reload defaults if products don't have images yet
-        if (this.products.length === 0 || (this.products.length > 0 && !this.products[0].images?.some(i => i.startsWith('assets/')))) {
+        // Reload defaults if products don't have images yet or product count changed
+        if (this.products.length === 0 || this.products.length !== defaultProducts.length || (this.products.length > 0 && !this.products[0].images?.some(i => i.startsWith('assets/')))) {
             this.loadDefaultProducts();
         }
     }
